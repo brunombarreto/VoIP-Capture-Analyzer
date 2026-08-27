@@ -1,2 +1,2 @@
 # VoIP-Capture-Analyzer
-Engine que reconstrói sinalização SIP, SDP, RTP e RTCP e gera indicadores, gráficos e relatório técnico.
+Framework para análise técnica de capturas VoIP, com foco em **SIP, SDP, RTP e RTCP**, reconstrução de chamadas, correlação de pernas B2BUA, métricas de mídia e diagnóstico baseado em evidências.
