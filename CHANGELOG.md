@@ -1,5 +1,23 @@
 # Changelog — VoIP Capture Analyzer
 
+## v2.28
+
+### [Added]
+- Registro de validações externas no checklist de infraestrutura, permitindo informar status, evidência e resultado sem modificar os dados observados na captura.
+- Regeneração automática dos relatórios PDF e DOCX após o salvamento de uma validação externa.
+- Termos `Evidência externa`, `Resultado da validação` e `Validação de infraestrutura` no glossário compartilhado.
+
+### [Changed]
+- O checklist de infraestrutura passou a exibir o estado da validação e os registros externos associados.
+- A interface diferencia explicitamente evidências da captura de evidências obtidas externamente.
+- Atualizada a versão da aplicação para `v2.28`.
+
+### [Fixed]
+- Nenhuma correção funcional específica registrada nesta versão.
+
+### [To do]
+- Evoluir a validação externa para permitir histórico/auditoria de alterações e anexação controlada de evidências, sem alterar retroativamente os fatos observados da captura.
+
 ## v2.27
 
 ### [Added]
