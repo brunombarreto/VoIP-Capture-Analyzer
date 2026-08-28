@@ -1,5 +1,21 @@
 # Changelog — VoIP Capture Analyzer
 
+## v2.27
+
+### [Added]
+- Checklist de validação de infraestrutura na interface e nos relatórios, derivado dos candidatos diagnósticos observados na captura.
+- Recomendações estruturadas para validação de firewall, NAT, SIP ALG, SBC/PBX, QoS/DSCP e roteamento/ponto de captura.
+
+### [Changed]
+- Evoluído o diagnóstico para separar explicitamente ações de validação externa de hipóteses de causa raiz.
+- Atualizada a versão da aplicação para `v2.27`.
+
+### [Fixed]
+- Removida importação duplicada de `tshark_media` no engine de análise.
+
+### [To do]
+- Evoluir o checklist para permitir registro de evidências externas e resultado da validação sem alterar retroativamente os dados observados da captura.
+
 ## v2.26
 
 ### [Changed]
