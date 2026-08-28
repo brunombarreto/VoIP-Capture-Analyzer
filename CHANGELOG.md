@@ -1,4 +1,21 @@
-# Changelog — VoIP Capture Analyzer
+# Changelog
+
+## v2.29
+
+### [Changed]
+- O checklist de validação de infraestrutura passou a explicar também nos relatórios PDF e DOCX que as colunas **Validação externa**, **Evidência** e **Resultado** registram informações externas fornecidas pelo usuário sem alterar as evidências observadas na captura.
+- O encerramento gracioso da aplicação passou a cancelar jobs ainda ativos e limpar os artefatos de runtime (capturas, PDF, DOCX e gráficos), incluindo a saída por `CTRL+C`/shutdown do servidor.
+- `activate.py` passou a abrir, em Linux/macOS, um subshell com o `.venv` já ativado após a instalação das dependências, eliminando a necessidade de executar `source` separadamente.
+- Adicionado `deactivate.py` como auxiliar para orientar a desativação do ambiente virtual e, opcionalmente, abrir um shell limpo em Unix.
+
+### [Fixed]
+- Evitada a permanência de artefatos temporários quando o processo do Analyzer é encerrado durante um job em execução.
+
+### [Added]
+- Rastreamento das tarefas de análise para permitir cancelamento e limpeza ordenados no ciclo de vida da aplicação.
+
+### [To do]
+- Avaliar persistência opcional de histórico de análises e auditoria de validações externas em versões futuras.
 
 ## v2.28
 
