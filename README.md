@@ -38,10 +38,9 @@ A forma recomendada é usar o script de preparação do ambiente:
 
 ```bash
 python activate.py
-source .venv/bin/activate
 ```
 
-O script cria `.venv` quando necessário e instala as dependências de `requirements.txt`. Também é possível executar manualmente:
+No Linux/macOS, o script cria `.venv`, instala as dependências e abre um novo shell com o ambiente já ativado. Use `exit` para sair desse shell e retornar ao ambiente anterior. Em PowerShell, o script informa o comando de ativação porque um processo Python não consegue alterar o ambiente do shell pai. Também é possível executar manualmente:
 
 ```bash
 python3.11 -m venv .venv
