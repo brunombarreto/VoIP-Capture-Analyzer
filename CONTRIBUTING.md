@@ -60,3 +60,8 @@ pytest
 ## Segurança e dados de captura
 
 Capturas SIP/RTP podem conter números, endereços IP, URIs, cabeçalhos, áudio e outras informações sensíveis. Não publique capturas reais em Issues ou Pull Requests sem autorização e sem aplicar a anonimização necessária.
+
+
+### Preparação do ambiente
+
+Use `python activate.py` para criar `.venv`, instalar as dependências e, em Linux/macOS, abrir um shell já ativado. Para sair do ambiente, use `exit` nesse subshell ou `python deactivate.py` para consultar o comando apropriado.
