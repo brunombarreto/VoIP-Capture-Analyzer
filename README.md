@@ -19,6 +19,7 @@ Framework web para análise técnica de capturas VoIP, com foco em **SIP, SDP, R
 - Limpeza dos relatórios e artefatos anteriores ao iniciar uma nova análise.
 - Interface web com atualização de progresso em tempo real via WebSocket.
 - Menu de ajuda com instruções de uso, download da suíte atual, glossário, licença, contribuição e contato.
+- Checklist de validação de infraestrutura orientado pelos achados da captura, sem afirmar causa raiz sem evidência externa.
 
 ## Requisitos
 
