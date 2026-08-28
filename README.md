@@ -1,103 +1,169 @@
-# VoIP-Capture-Analyzer
-Framework para análise técnica de capturas VoIP, com foco em **SIP, SDP, RTP e RTCP**, reconstrução de chamadas, correlação de pernas B2BUA, métricas de mídia e diagnóstico baseado em evidências.
+# VoIP Capture Analyzer
+
+Framework web para análise técnica de capturas VoIP, com foco em **SIP, SDP, RTP e RTCP**, reconstrução de chamadas, correlação de pernas B2BUA, métricas de mídia e diagnóstico baseado em evidências.
 
 ## Principais recursos
 
-- Upload de `.cap`, `.pcap` e `.pcapng` pela interface web.
-- TShark como decodificador e leitor primário da captura.
+- Upload de uma ou várias capturas `.cap`, `.pcap` ou `.pcapng`.
+- Consolidação automática de múltiplas capturas com `mergecap` antes da análise.
+- TShark como decodificador e leitor primário da captura consolidada.
 - Recuperação de SIP/SDP/RTP/RTCP por caminhos alternativos baseados em dados extraídos pelo TShark.
 - Correlação de chamadas com múltiplos `Call-ID`s, incluindo cenários B2BUA.
 - Métricas de ASR, PDD, duração, RTP, perda, jitter, bitrate e PPS quando os dados permitem cálculo confiável.
-- Identificação de RTP unilateral, interrupções assimétricas e gaps de mídia a partir de 1 segundo.
-- Linha do tempo correlacionada SIP + RTP, com início/fim de mídia e interrupções posicionadas no mesmo eixo temporal.
+- Identificação de RTP unilateral, interrupções assimétricas e gaps de mídia.
+- Linha do tempo correlacionada SIP + RTP.
 - Gráficos técnicos e relatório em HTML, PDF e DOCX.
 - Glossário técnico incorporado ao dashboard e aos relatórios.
-- Nome original da captura preservado nos relatórios para facilitar auditoria e rastreabilidade.
-- Interface sem dependência de Alpine.js; o frontend utiliza JavaScript vanilla.
-- Menu de ajuda com conteúdo de uso, download da versão atual, glossário, licença MIT, diretrizes de contribuição e contato.
+- Nome original das capturas preservado nos relatórios para facilitar auditoria e rastreabilidade.
+- Limpeza automática dos arquivos de captura após o processamento.
+- Limpeza dos relatórios e artefatos anteriores ao iniciar uma nova análise.
+- Interface web com atualização de progresso em tempo real via WebSocket.
+- Menu de ajuda com instruções de uso, download da suíte atual, glossário, licença, contribuição e contato.
+
+## Requisitos
+
+- Python 3.11 ou superior.
+- TShark instalado e disponível no `PATH`, ou informado pela variável `TSHARK_BIN`.
+- `mergecap` instalado e disponível no `PATH`, ou informado pela variável `MERGECAP_BIN`. Ele é necessário quando duas ou mais capturas são enviadas para a mesma análise.
+- Dependências Python do arquivo `requirements.txt`.
+- Bibliotecas de sistema necessárias para o WeasyPrint quando PDF é utilizado.
 
 ## Execução local
+
+### Instalação
+
+A forma recomendada é usar o script de preparação do ambiente:
+
+```bash
+python activate.py
+source .venv/bin/activate
+```
+
+O script cria `.venv` quando necessário e instala as dependências de `requirements.txt`. Também é possível executar manualmente:
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 tshark --version
-IP=$(hostname -I | awk '{print $1}')
-uvicorn app.main:app --host "$IP" --port 8000
+mergecap --version
 ```
 
-Acesse `http://IP:8000`.
+### Inicialização simplificada
 
-### Dependências do sistema
+```bash
+python run.py
+```
 
-O funcionamento completo depende do TShark e das bibliotecas necessárias pelo WeasyPrint no sistema operacional. Consulte a seção de requisitos de terceiros abaixo.
+Por padrão, a aplicação escuta em `0.0.0.0:8000`.
+
+A porta e o endereço podem ser escolhidos na inicialização:
+
+```bash
+python run.py --port 8080
+```
+
+```bash
+python run.py --host 127.0.0.1 --port 8080
+```
+
+Também é possível utilizar as variáveis de ambiente:
+
+```bash
+HOST=0.0.0.0 PORT=8080 python run.py
+```
+
+A inicialização direta pelo Uvicorn continua disponível:
+
+```bash
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+Acesse `http://IP:PORTA` pelo navegador.
+
+## Upload de capturas
+
+A interface permite selecionar ou arrastar uma ou mais capturas.
+
+- **Uma captura:** o arquivo é analisado diretamente pelo pipeline existente.
+- **Duas ou mais capturas:** os arquivos são enviados para um diretório temporário do job e consolidados pelo `mergecap`. A captura consolidada é então analisada pelo mesmo pipeline TShark/SIP/SDP/RTP/RTCP.
+- Os nomes originais das capturas são preservados como metadados do job e apresentados no relatório.
+- Os arquivos de captura temporários, inclusive o arquivo consolidado, são removidos após a conclusão ou falha do job.
+- Ao iniciar **Nova análise**, os relatórios e gráficos da análise anterior também são removidos.
+
+O limite padrão é de **500 MB por arquivo** e **10 arquivos por análise**. Esses valores podem ser alterados por variáveis de ambiente.
+
+## Configuração
+
+| Variável | Padrão | Finalidade |
+|---|---|---|
+| `HOST` | `0.0.0.0` | Endereço de escuta HTTP |
+| `PORT` | `8000` | Porta HTTP |
+| `TSHARK_BIN` | `tshark` | Executável do TShark |
+| `MERGECAP_BIN` | `mergecap` | Executável do mergecap |
+| `MAX_UPLOAD_MB` | `500` | Limite por arquivo de captura |
+| `MAX_CAPTURE_FILES` | `10` | Quantidade máxima de capturas por análise |
+| `ANALYSIS_TIMEOUT_SECONDS` | `1800` | Tempo limite de operações de análise/merge |
+
+Exemplo:
+
+```bash
+export PORT=8080
+export MAX_UPLOAD_MB=1024
+export MAX_CAPTURE_FILES=20
+python run.py
+```
+
+## Docker
+
+O `docker-compose.yml` permite parametrizar a porta publicada:
+
+```bash
+PORT=8080 docker compose up -d --build
+```
+
+A aplicação ficará disponível na porta escolhida no host.
+
+Em diagnósticos de mídia/sinalização, valide também firewall, portas/protocolos/serviços, NAT e eventual SIP ALG quando os achados forem compatíveis.
 
 ## Estrutura
 
 ```text
 app/
   analyzers/       Motor de análise e modelos
-  services/        TShark, gráficos, relatórios e jobs
-  static/          JavaScript da interface
+  services/        TShark, mergecap, gráficos, relatórios, glossário e jobs
+  static/          JavaScript e identidade visual da interface
   templates/       Dashboard e template do relatório
-  main.py          API FastAPI
-
+data/              Arquivos temporários e relatórios gerados em runtime
 tests/             Testes automatizados
-LICENSE             Licença MIT
-CONTRIBUTING.md     Diretrizes para contribuições
-README.md           Documentação principal
+run.py             Inicialização simplificada com escolha de host/porta
+LICENSE            Licença MIT
+CONTRIBUTING.md    Diretrizes para contribuições
+CHANGELOG.md       Histórico de alterações
 ```
-## Interpretação das métricas
 
-O Analyzer separa três níveis de informação:
+## Licenciamento
 
-1. **Observado** — diretamente identificado na captura/TShark.
-2. **Calculado** — derivado matematicamente de dados observados.
-3. **Diagnóstico** — interpretação técnica baseada nas evidências disponíveis.
+O código-fonte deste projeto é distribuído sob a **Licença MIT**. Consulte o arquivo [LICENSE](LICENSE) para os termos completos.
 
-A ausência de informação suficiente resulta em `N/A`, em vez de uma estimativa artificial.
+As ferramentas e bibliotecas externas utilizadas pelo ambiente de execução permanecem sujeitas às suas próprias licenças. O Analyzer executa TShark e mergecap como utilitários externos por linha de comando e não incorpora o código-fonte dessas ferramentas.
 
-REGISTER e OPTIONS são apresentados como tráfego de controle/saúde SIP e **não são contabilizados como tentativas de chamada**.
+## Download
 
-## Licença
+A suíte atual está disponível no release mais recente do GitHub:
 
-Este projeto é distribuído sob a **Licença MIT**. Você pode usar, copiar, modificar, mesclar, publicar, distribuir, sublicenciar e vender cópias do software, observando as condições da licença, especialmente a preservação do aviso de copyright e da própria licença.
-
-Consulte o arquivo LICENSE para o texto completo e as condições de isenção de responsabilidade.
-
----
-
-## Requisitos de sistema e licenciamento de terceiros
-
-O código-fonte deste projeto é MIT, mas o funcionamento depende de componentes externos com licenças próprias. Essas licenças continuam aplicáveis aos respectivos componentes.
-
-### 1. Dependências do sistema operacional
-
-- **TShark / Wireshark**: projeto distribuído sob a GNU GPL e outras licenças aplicáveis aos componentes do Wireshark. O VoIP Capture Analyzer não incorpora o código-fonte do TShark; ele executa o utilitário externamente por CLI.
-- **Shared MIME Info**: componente externo do sistema, sujeito à sua própria licença.
-- **Pango / GDK Pixbuf e bibliotecas relacionadas**: componentes externos utilizados pelo ambiente de renderização do WeasyPrint, sujeitos às respectivas licenças, incluindo LGPL quando aplicável.
-
-### 2. Dependências Python
-
-O projeto utiliza bibliotecas como FastAPI, Pydantic, Jinja2, Matplotlib, WeasyPrint e python-docx. Cada dependência permanece sujeita à licença indicada pelo seu próprio projeto e distribuição. Antes de redistribuir uma instalação completa, consulte as licenças efetivamente instaladas no ambiente.
-
-O uso de uma dependência externa pelo projeto não altera a licença do código-fonte próprio do VoIP Capture Analyzer.
-
----
+[Download da suíte atual](https://github.com/brunombarreto/VoIP-Capture-Analyzer/releases/latest/download/VoIP_Capture_Analyzer.zip)
 
 ## Desenvolvimento
+
+Execute os testes com:
 
 ```bash
 pytest
 ```
 
-Consulte "CONTRIBUTING.md" para as regras de contribuição.
+Para regras de contribuição, padrões de código e processo de Pull Request, consulte [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Contato
 
-Para contato com o mantenedor do projeto: <a href="https://linktr.ee/brunombarreto" target="_blank" rel="noopener">Bruno Barreto</a>.
-
-## Download
-
-A suíte atual está disponível no release mais recente do GitHub: https://github.com/brunombarreto/VoIP-Capture-Analyzer/releases/latest/download/VoIP_Capture_Analyzer.zip
+[Bruno Barreto](https://linktr.ee/brunombarreto)
