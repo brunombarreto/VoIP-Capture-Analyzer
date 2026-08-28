@@ -20,6 +20,7 @@ Framework web para análise técnica de capturas VoIP, com foco em **SIP, SDP, R
 - Interface web com atualização de progresso em tempo real via WebSocket.
 - Menu de ajuda com instruções de uso, download da suíte atual, glossário, licença, contribuição e contato.
 - Checklist de validação de infraestrutura orientado pelos achados da captura, sem afirmar causa raiz sem evidência externa.
+- Registro de validações externas no checklist, com status, evidência e resultado, refletidos nos relatórios PDF e DOCX.
 
 ## Requisitos
 
@@ -91,6 +92,7 @@ A interface permite selecionar ou arrastar uma ou mais capturas.
 - Os nomes originais das capturas são preservados como metadados do job e apresentados no relatório.
 - Os arquivos de captura temporários, inclusive o arquivo consolidado, são removidos após a conclusão ou falha do job.
 - Ao iniciar **Nova análise**, os relatórios e gráficos da análise anterior também são removidos.
+- Após a análise, é possível registrar validações externas no checklist de infraestrutura; essas informações são separadas das evidências observadas na captura e os relatórios são regenerados ao salvar.
 
 O limite padrão é de **500 MB por arquivo** e **10 arquivos por análise**. Esses valores podem ser alterados por variáveis de ambiente.
 
